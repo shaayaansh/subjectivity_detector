@@ -1,7 +1,7 @@
 import numpy as np 
 import pandas as pd 
 from torch.utils.data import Dataset
-from tansformers import AutoTokenizer
+from transformers import AutoTokenizer
 import os
 
 
