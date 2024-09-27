@@ -36,7 +36,7 @@ class CustomDataset(Dataset):
         text = self.dataset[self.labels["text"]].iloc[idx]
         label = self.dataset[self.labels["label"]].iloc[idx]
         tokenized = self.tokenizer(text, return_tensors="pt",
-                                    truncation=True, batched=True)
+                                    truncation=True, padding="max_length")
 
         return tokenized, text, label
 
