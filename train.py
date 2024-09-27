@@ -38,7 +38,7 @@ def main():
 
     model.to(device)
 
-    for epoch in num_epochs:
+    for epoch in range(num_epochs):
         model.train()
         for batch in tqdm(train_dataloader):
             tokenized, _, labels = batch
