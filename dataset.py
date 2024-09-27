@@ -8,7 +8,7 @@ import os
 class CustomDataset(Dataset):
     def __init__(self, data_path,
                   batch_type, tokenizer):
-        super(self, CustomDataset).__init__()
+        super(CustomDataset, self).__init__()
         
         self.tokenizer = tokenizer
         data_splits = [os.path.join(data_path, split)
