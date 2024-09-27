@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd 
 from torch.utils.data import Dataset
 from transformers import AutoTokenizer
+import torch
 import os
 
 
@@ -19,14 +20,17 @@ class CustomDataset(Dataset):
         if batch_type == "train":
             dataset_path = [dataset for dataset in data_splits if "train" in dataset][0]
             self.dataset = pd.read_csv(dataset_path)
+            self.dataset = self.dataset.dropna()
 
         elif batch_type == "val":
             dataset_path = [dataset for dataset in data_splits if "val" in dataset][0]
             self.dataset = pd.read_csv(dataset_path)
+            self.dataset = self.dataset.dropna()
 
         else:
             dataset_path = [dataset for dataset in data_splits if "test" in dataset][0]
             self.dataset = pd.read_csv(dataset_path)
+            self.dataset = self.dataset.dropna()
     
     
     def __len__(self):

@@ -25,7 +25,7 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = BertDetector(model_name)
     optimizer = AdamW(model.parameters(), lr=learning_rate)
-    criterion = nn.BCELoss()
+    criterion = torch.nn.BCEWithLogitsLoss()
 
     dataset_path = os.path.join(data_path, dataset_name)
 
@@ -37,6 +37,7 @@ def main():
     val_datalodaer = DataLoader(val_dataset, batch_size, shuffle=True)
     test_dataloader = DataLoader(test_dataset, batch_size, shuffle=True)
 
+    
     model.to(device)
 
     for epoch in range(num_epochs):
@@ -44,14 +45,12 @@ def main():
         for batch in tqdm(train_dataloader):
             tokenized, _, labels = batch
             labels = torch.tensor(labels).to(device)
-            input_ids = tokenized["input_ids"].to(device)       # shape [batch_size, 1, 512]
-            attention_mask = tokenized["attention_mask"].to(device) # shape [batch_size, 1, 512]
-
+            input_ids = tokenized["input_ids"].squeeze(1).to(device)       # [batch_size, 1, 512] -->  [batch_size, 512]
+            attention_mask = tokenized["attention_mask"].squeeze(1).to(device) # [batch_size, 1, 512] -->  [batch_size, 512]
+      
             optimizer.zero_grad()
-            outputs = model(input_ids=input_ids.squeeze(1), attention_mask=attention_mask.squeeze(1))  # model expects [batch_size, 512]
-            logits = outputs.logits
-            preds = torch.argmax(logits, dim=1)
-            loss = criterion(preds, labels)
+            outputs = model((input_ids, attention_mask))  
+            loss = criterion(outputs.float(), labels.unsqueeze(1).float())
             loss.backward()
 
             optimizer.step()
@@ -66,15 +65,15 @@ def main():
                     labels = torch.tensor(labels).to(device)
                     input_ids = tokenized["input_ids"].squeeze(1).to(device)
                     attention_mask = tokenized["attention_mask"].squeeze(1).to(device)
-
-                    outputs = model(input_ids, attention_mask)
-                    logits = outputs.logits
-
-                    y_pred.extend(logits.detach().numpy())
-                    y_true.extend(labels.detach().numpy())
+                    
+                    outputs = model((input_ids, attention_mask))
+                    probabilities = torch.sigmoid(outputs)
+                    preds = torch.where(probabilities > 0.5, torch.tensor(1.0), torch.tensor(0.0))
+                    y_pred.extend(preds.cpu())
+                    y_true.extend(labels.squeeze(-1).detach().cpu())
 
             print("VALIDATION PERFORMANCE: \n")
-            print(classification_report(y_true, y_pred, target_names=[1,0]))
+            print(classification_report(y_true, y_pred, target_names=["obj", "subj"]))
 
     
 if __name__ == "__main__":
