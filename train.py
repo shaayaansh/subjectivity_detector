@@ -74,5 +74,10 @@ def main():
 
             print("VALIDATION PERFORMANCE: \n")
             print(classification_report(y_true, y_pred, target_names=[1,0]))
+
+    
+    if __name__ == "__main__":
+
+        main()
             
 
