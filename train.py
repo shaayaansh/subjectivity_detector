@@ -6,7 +6,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.optim import AdamW
 from transformers import AutoTokenizer
-from bert_model import BertModel
+from Models.bert_model import BertModel
 from dataset import CustomDataset
 from tqdm import tqdm
 from sklearn.metrics import classification_report
