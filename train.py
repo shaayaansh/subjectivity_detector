@@ -9,7 +9,7 @@ from transformers import AutoTokenizer
 from bert_model import BertModel
 from dataset import CustomDataset
 from tqdm import tqdm
-
+from sklearn.metrics import classification_report
 
 
 def main():
@@ -58,6 +58,7 @@ def main():
         if epoch % 2 == 0:
             model.eval()
             y_pred = []
+            y_true = []
             for batch in tqdm(val_datalodaer):
                 with torch.no_grad():
                     tokenized, _, labels = batch
@@ -67,4 +68,11 @@ def main():
 
                     outputs = model(input_ids, attention_mask)
                     logits = outputs.logits
+
+                    y_pred.extend(logits.detach().numpy())
+                    y_true.extend(labels.detach().numpy())
+
+            print("VALIDATION PERFORMANCE: \n")
+            print(classification_report(y_true, y_pred, target_names=[1,0]))
+            
 
