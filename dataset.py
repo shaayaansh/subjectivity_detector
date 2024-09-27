@@ -7,9 +7,10 @@ import os
 
 class CustomDataset(Dataset):
     def __init__(self, data_path,
-                  batch_type, tokenizer):
+                  batch_type, labels, tokenizer):
         super(CustomDataset, self).__init__()
         
+        self.labels = labels
         self.tokenizer = tokenizer
         data_splits = [os.path.join(data_path, split)
                         for split in os.listdir(data_path)]
@@ -32,8 +33,8 @@ class CustomDataset(Dataset):
         return len(self.dataset)
     
     def __getitem__(self, idx):
-        text = self.dataset["text"].iloc[idx]
-        label = self.dataset["label"].iloc[idx]
+        text = self.dataset[self.labels["text"]].iloc[idx]
+        label = self.dataset[self.labels["label"]].iloc[idx]
         tokenized = self.tokenizer(text, return_tensors="pt",
                                     truncation=True, batched=True)
 

@@ -20,6 +20,7 @@ def main():
     learning_rate = 5e-5
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     num_epochs = 5
+    labels = {"text": "sentence", "label":"answer"}
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = BertDetector(model_name)
@@ -28,9 +29,9 @@ def main():
 
     dataset_path = os.path.join(data_path, dataset_name)
 
-    train_dataset = CustomDataset(dataset_path, "train", tokenizer)
-    val_dataset = CustomDataset(dataset_path, "val", tokenizer)
-    test_dataset = CustomDataset(dataset_path, "test", tokenizer)
+    train_dataset = CustomDataset(dataset_path, "train", labels, tokenizer)
+    val_dataset = CustomDataset(dataset_path, "val", labels, tokenizer)
+    test_dataset = CustomDataset(dataset_path, "test", labels, tokenizer)
 
     train_dataloader = DataLoader(train_dataset, batch_size, shuffle=True)
     val_datalodaer = DataLoader(val_dataset, batch_size, shuffle=True)
