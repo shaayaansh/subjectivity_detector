@@ -6,7 +6,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.optim import AdamW
 from transformers import AutoTokenizer
-from Model.bert_model import BertModel
+from Model.bert_model import BertDetector
 from dataset import CustomDataset
 from tqdm import tqdm
 from sklearn.metrics import classification_report
@@ -22,7 +22,7 @@ def main():
     num_epochs = 5
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = BertModel(model_name)
+    model = BertDetector(model_name)
     optimizer = AdamW(model.parameters(), lr=learning_rate)
     criterion = nn.BCELoss()
 
