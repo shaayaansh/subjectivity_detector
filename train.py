@@ -100,7 +100,8 @@ def main(args):
                     probabilities = torch.sigmoid(outputs)
                     preds = torch.where(probabilities > 0.5, torch.tensor(1.0), torch.tensor(0.0))
                     y_pred.extend(preds.cpu().numpy())
-                    y_true.extend(labels.squeeze(-1).cpu().numpy())
+                        
+                    y_true.extend(labels.cpu().numpy().tolist())
 
             print("VALIDATION PERFORMANCE: \n")
             print(classification_report(y_true, y_pred, target_names=["obj", "subj"]))
