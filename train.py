@@ -96,7 +96,7 @@ def main(args):
 
     
     if best_model_weights is not None:
-        torch.save(best_model_weights, os.path.join(model_save_path, dataset_name)+".pth")
+        torch.save(best_model_weights, os.path.join(model_save_path, dataset_name)+"best_model.pth")
 
     
 if __name__ == "__main__":
