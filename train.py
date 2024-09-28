@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, ConcatDataset
 from torch.optim import AdamW
 from transformers import AutoTokenizer
 from Model.bert_model import BertDetector
@@ -22,36 +22,52 @@ def main(args):
     learning_rate = 5e-5
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     num_epochs = 5
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+
+    mpqa_labels = {"text": "sentence", "label":"answer"}
+    news_1_labels = {"text": "Sentence", "label": "Label"}
+    news_2_labels = {"text": "text", "label": "labels"}
 
     # map labels to dataset columns
     if dataset_name == "MPQA":
-        labels = {"text": "sentence", "label":"answer"}
-
+        labels = mpqa_labels
     elif dataset_name == "News-1":
-        labels = {"text": "Sentence", "label": "Label"}
-    
+        labels = news_1_labels
     elif dataset_name == "News-2":
-        labels = {"text": "text", "label": "labels"}
+        labels = news_2_labels
 
+    if dataset_name != "all":
+        dataset_path = os.path.join(data_path, dataset_name)
+        train_dataset = CustomDataset(dataset_path, "train", labels, tokenizer)
+        val_dataset = CustomDataset(dataset_path, "val", labels, tokenizer)
 
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    elif dataset_name == "all":
+        mpqa_dataset_path = os.path.join(data_path, "MPQA")
+        news_1_dataset_path = os.path.join(data_path, "News-1")
+        news_2_dataset_path = os.path.join(data_path, "News-2")
+
+        mpqa_train_dataset = CustomDataset(mpqa_dataset_path, "train", mpqa_labels, tokenizer)
+        news_1_train_dataset = CustomDataset(news_1_dataset_path, "train", news_1_labels, tokenizer)
+        news_2_train_dataset = CustomDataset(news_2_dataset_path, "train", news_2_labels, tokenizer)
+
+        mpqa_val_dataset = CustomDataset(mpqa_dataset_path, "val", mpqa_labels, tokenizer)
+        news_1_val_dataset = CustomDataset(news_1_dataset_path, "val", news_1_labels, tokenizer)
+        news_2_val_dataset = CustomDataset(news_2_dataset_path, "val", news_2_labels, tokenizer)
+        # combining all the datasets
+        train_dataset = ConcatDataset([mpqa_train_dataset, news_1_train_dataset, news_2_train_dataset])
+        val_dataset = ConcatDataset([mpqa_val_dataset, news_1_val_dataset, news_2_val_dataset])
+
+    
+    train_dataloader = DataLoader(train_dataset, batch_size, shuffle=True)
+    val_datalodaer = DataLoader(val_dataset, batch_size, shuffle=True)
+
     model = BertDetector(model_name)
     optimizer = AdamW(model.parameters(), lr=learning_rate)
     criterion = torch.nn.BCEWithLogitsLoss()
 
-    dataset_path = os.path.join(data_path, dataset_name)
-
-    train_dataset = CustomDataset(dataset_path, "train", labels, tokenizer)
-    val_dataset = CustomDataset(dataset_path, "val", labels, tokenizer)
-    test_dataset = CustomDataset(dataset_path, "test", labels, tokenizer)
-
-    train_dataloader = DataLoader(train_dataset, batch_size, shuffle=True)
-    val_datalodaer = DataLoader(val_dataset, batch_size, shuffle=True)
-    test_dataloader = DataLoader(test_dataset, batch_size, shuffle=True)
-
     # track best model on validation
     best_val_f1_score = 0
-    
     model.to(device)
 
     for epoch in range(num_epochs):
