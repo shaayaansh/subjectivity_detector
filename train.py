@@ -9,18 +9,30 @@ from transformers import AutoTokenizer
 from Model.bert_model import BertDetector
 from dataset import CustomDataset
 from tqdm import tqdm
-from sklearn.metrics import classification_report
+import argparse
+from sklearn.metrics import classification_report, f1_score
 
 
-def main():
+def main(args):
     model_name = "bert-base-uncased"
     data_path = "Data"
-    dataset_name = "MPQA"
+    model_save_path = "Model"
+    dataset_name = args.dataset_name
     batch_size = 8
     learning_rate = 5e-5
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     num_epochs = 5
-    labels = {"text": "sentence", "label":"answer"}
+
+    # map labels to dataset columns
+    if dataset_name == "MPQA":
+        labels = {"text": "sentence", "label":"answer"}
+
+    elif dataset_name == "news-1":
+        labels = {"text": "Sentence", "label": "Label"}
+    
+    elif dataset_name == "news-2":
+        labels = {"text": "text", "label": "labels"}
+
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = BertDetector(model_name)
@@ -37,6 +49,8 @@ def main():
     val_datalodaer = DataLoader(val_dataset, batch_size, shuffle=True)
     test_dataloader = DataLoader(test_dataset, batch_size, shuffle=True)
 
+    # track best model on validation
+    best_val_f1_score = 0
     
     model.to(device)
 
@@ -75,9 +89,21 @@ def main():
             print("VALIDATION PERFORMANCE: \n")
             print(classification_report(y_true, y_pred, target_names=["obj", "subj"]))
 
+            val_f1_score = f1_score(y_true, y_pred, average='macro')
+            if val_f1_score > best_val_f1_score:
+                best_val_f1_score = val_f1_score
+                best_model_weights = model.state_dict()
+
+    
+    if best_model_weights is not None:
+        torch.save(best_model_weights, os.path.join(model_save_path, dataset_name)+".pth")
+
     
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset_name", type=str, help="dataset to train and test on. To test on all datasets type 'all'")
 
-    main()
+    args = parser.parse_args()
+    main(args)
             
 
