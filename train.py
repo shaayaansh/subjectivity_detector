@@ -27,10 +27,10 @@ def main(args):
     if dataset_name == "MPQA":
         labels = {"text": "sentence", "label":"answer"}
 
-    elif dataset_name == "news-1":
+    elif dataset_name == "News-1":
         labels = {"text": "Sentence", "label": "Label"}
     
-    elif dataset_name == "news-2":
+    elif dataset_name == "News-2":
         labels = {"text": "text", "label": "labels"}
 
 
