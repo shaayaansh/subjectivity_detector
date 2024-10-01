@@ -20,4 +20,4 @@ python test.py --train_dataset_name MPQA --test_dataset_name News-1
 
 ## Performance Results
 
-![Cross-Validation Performance Heatmap](img/performance)
+![Cross-Validation Performance Heatmap](img/performance.jpg)
