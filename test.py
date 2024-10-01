@@ -2,7 +2,7 @@ import torch
 import os
 from dataset import CustomDataset
 from tqdm import tqdm
-import argeparse
+import argparse
 from torch.utils.data import ConcatDataset, DataLoader
 from Model.bert_model import BertDetector
 from transformers import AutoTokenizer
