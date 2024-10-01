@@ -12,8 +12,9 @@ from sklearn.metrics import classification_report
 def main(args):
     model_name = "bert-base-uncased"
     data_path = "Data"
-    dataset_name = args.dataset_name
-    model_load_path = os.path.join("Model", f"{dataset_name}best_model.pth")
+    train_dataset_name = args.train_dataset_name
+    test_dataset_name = args.test_dataset_name
+    model_load_path = os.path.join("Model", f"{train_dataset_name}best_model.pth")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     batch_size = 8
     tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -26,18 +27,18 @@ def main(args):
     news_2_labels = {"text": "text", "label": "labels"}
 
     # map labels to dataset columns
-    if dataset_name == "MPQA":
+    if test_dataset_name == "MPQA":
         labels = mpqa_labels
-    elif dataset_name == "News-1":
+    elif test_dataset_name == "News-1":
         labels = news_1_labels
-    elif dataset_name == "News-2":
+    elif test_dataset_name == "News-2":
         labels = news_2_labels
 
-    if dataset_name != "all":
-        dataset_path = os.path.join(data_path, dataset_name)
+    if test_dataset_name != "all":
+        dataset_path = os.path.join(data_path, test_dataset_name)
         test_dataset = CustomDataset(dataset_path, "test", labels, tokenizer)
     
-    elif dataset_name == "all":
+    elif test_dataset_name == "all":
         mpqa_dataset_path = os.path.join(data_path, "MPQA")
         news_1_dataset_path = os.path.join(data_path, "News-1")
         news_2_dataset_path = os.path.join(data_path, "News-2")
@@ -77,7 +78,8 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_name", type=str, help="dataset to test on. To test on all datasets type 'all'")
+    parser.add_argument("--train_dataset_name", type=str, help="dataset which the model is trained on. options are MPQA, News-1, News-2 and all.")
+    parser.add_argument('--test_dataset_name', type=str, help="dataset which we test the model on. Options are MPQA, News-1, News-2 and all.")
 
     args = parser.parse_args()
     main(args)
