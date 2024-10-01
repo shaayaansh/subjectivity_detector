@@ -73,3 +73,11 @@ def main(args):
     print("TEST PERFORMANCE: ")
     print("========================")
     print(classification_report(y_true, y_pred, target_names=["Obj", "Subj"]))
+
+
+if __name__ == "__main__":
+    parser = argeparse.ArgumentParser()
+    parser.add_argument("--dataset_name", type=str, help="dataset to test on. To test on all datasets type 'all'")
+
+    args = parser.parse_args()
+    main(args)

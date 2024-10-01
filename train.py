@@ -118,7 +118,7 @@ def main(args):
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_name", type=str, help="dataset to train and test on. To test on all datasets type 'all'")
+    parser.add_argument("--dataset_name", type=str, help="dataset to train on. To train on all datasets type 'all'")
 
     args = parser.parse_args()
     main(args)
