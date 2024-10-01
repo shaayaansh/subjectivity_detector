@@ -6,6 +6,16 @@ We train a baseline model in different settings on these datasets:
 * Multi-Dataset Learning: where we train and test in cross-validation setting.
 * Multi-task Learning: where we view each dataset as a different task and allocate it's own classification head to it. 
 
+to get started, first clone this repository:
+```python
+git clone
+```
+
+There are four options to train a model:
+* train on MPQA
+* train on News-1
+* train on News-2
+* train on all datasets combined (all)
 
 To train the model on a given dataset(MPQA), run the following code:
 
