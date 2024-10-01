@@ -104,7 +104,7 @@ def main(args):
                     y_true.extend(labels.cpu().numpy().tolist())
 
             print("VALIDATION PERFORMANCE: \n")
-            print(classification_report(y_true, y_pred, target_names=["obj", "subj"]))
+            print(classification_report(y_true, y_pred, target_names=["Obj", "Subj"]))
 
             val_f1_score = f1_score(y_true, y_pred, average='macro')
             if val_f1_score > best_val_f1_score:
