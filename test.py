@@ -76,7 +76,7 @@ def main(args):
 
 
 if __name__ == "__main__":
-    parser = argeparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
     parser.add_argument("--dataset_name", type=str, help="dataset to test on. To test on all datasets type 'all'")
 
     args = parser.parse_args()
