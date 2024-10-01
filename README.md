@@ -8,7 +8,7 @@ We train a baseline model in different settings on these datasets:
 
 to get started, first clone this repository:
 ```python
-git clone
+git clone https://github.com/shaayaansh/subjectivity_detector.git
 ```
 
 There are four options to train a model:
